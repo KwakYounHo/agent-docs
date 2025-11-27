@@ -41,10 +41,31 @@
 - When translating Korean to English, express it naturally as a native speaker would, rather than translating literally.
 
 ## Development Status
-- **Current Phase**: Structure and README.md completed
-- **Next**: Schema-first development (see ADR-001)
-- **Approach**: Create schemas first as contracts, then create documents that conform to them
+- **Current Phase**: Schema definition in progress
+- **Completed**: base.schema.md, constitution.schema.md
+- **In Progress**: gate.schema.md
 - Reference `docs/adr/001-schema-first-development.md` for implementation order.
+
+## Blueprint-First Principle
+
+README files in this project serve as **blueprints** for framework elements:
+
+```
+README (Blueprint) → Schema (Contract) → Instance (Actual Document)
+```
+
+| Layer | Role | Example |
+|-------|------|---------|
+| README | Design specification for developers | `gates/README.md` |
+| Schema | Formal contract (FrontMatter definition) | `gate.schema.md` |
+| Instance | Actual framework document | `gates/specification/gate.md` |
+
+**Workflow**:
+1. Design/update README (blueprint) first
+2. Generate/update Schema based on README
+3. Create instances that conform to Schema
+
+This ensures READMEs remain the source of truth for framework design.
 
 ## Project Structure
 ```
