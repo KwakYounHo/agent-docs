@@ -97,8 +97,22 @@ related: []
 - **Type**: string[]
 - **Required**: No
 - **Default**: `[]`
-- **Example**: `[front-matters/constitution.schema.md, gates/documentation/README.md]`
-- **Description**: Paths to related documents. Only reference files that will be copied together to target projects.
+- **Example**: `[./aspects/completeness.md, ./aspects/feasibility.md]`
+- **Description**: Documents that need review when this document is modified.
+
+**Rules**:
+| Rule | Description |
+|------|-------------|
+| Purpose | List documents affected when this document changes |
+| Scope | Direct dependencies only (1-degree relationship) |
+| Direction | Unidirectional (this document → affected documents) |
+| Propagation | Transitive dependencies discovered through chaining |
+| Constraint | Only reference files copied together to target projects |
+
+**Anti-patterns**:
+- Listing transitive dependencies (e.g., Phase listing Task directly)
+- Circular references (A → B → A)
+- Referencing files not copied to target project
 
 ## Type-Status Mapping
 
