@@ -18,20 +18,20 @@ The Documentation Gate ensures **all documents conform to their schema**:
 
 ### Why a Separate Gate?
 
-| Aspect | Phase Gates | Documentation Gate |
-|--------|-------------|-------------------|
+| Aspect | Code Gates | Documentation Gate |
+|--------|------------|-------------------|
 | **Focus** | Work quality | Format quality |
 | **Examples** | Specification, Implementation | Schema Validation |
 | **Execution** | Parallel with other required gates | Parallel with other required gates |
 
 ### How It Works
 
-Documentation Gate is typically included in `required-gates` alongside Phase Gates:
+Documentation Gate is typically included in `required-gates` alongside Code Gates:
 
 ```yaml
 # Orchestrator → Reviewer Handoff
 required-gates:
-  - specification    # Phase Gate
+  - specification    # Code Gate
   - documentation    # Document Gate (parallel)
 ```
 
@@ -59,14 +59,15 @@ documentation/
 ---
 type: gate
 status: active
+version: 1.0.0
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 tags: [gate, documentation]
-related: [../../front-matters/]
+related: [./aspects/]
 
-gate-type: document
-trigger: document-change
-pass-condition: all-aspects
+name: documentation
+validates: document
+description: "Validates document format compliance against schema definitions"
 ---
 ```
 

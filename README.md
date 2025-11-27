@@ -48,8 +48,8 @@ This framework provides a **structure** and **schema** for managing LLM-based ag
 | Term | Definition |
 |------|------------|
 | **Gate** | Validation checkpoint for quality assurance |
-| **Phase Gate** | Sequential gate at phase boundaries (Specification, Implementation) |
-| **Document Gate** | Parallel gate triggered on document changes (Documentation) |
+| **Code Gate** | Gate that validates code/artifact quality (`validates: code`) |
+| **Document Gate** | Gate that validates document format compliance (`validates: document`) |
 | **Aspect** | Area of expertise within a Gate (e.g., Code-Style, Schema Validation) |
 | **Criteria** | Minimum requirements to pass an Aspect |
 

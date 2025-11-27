@@ -135,9 +135,9 @@ Orchestrator sends documents for gate validation:
 handoff:
   action: review
   document: path/to/document
-  required-gates:
-    - specification    # or implementation
-    - documentation
+  required-gates:           # Gate `name` field values
+    - specification         # Code Gate (validates: code)
+    - documentation         # Document Gate (validates: document)
   context:
     feature-id: "001-feature"
     phase: specification

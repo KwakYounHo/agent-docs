@@ -37,7 +37,7 @@ From our token efficiency research:
 ```
 front-matters/
 ├── README.md                    # This file
-├── common.schema.md             # Shared fields across all types
+├── base.schema.md               # Shared fields across all types
 ├── constitution.schema.md       # Constitution FrontMatter schema
 ├── gate.schema.md               # Gate FrontMatter schema
 ├── aspect.schema.md             # Aspect FrontMatter schema
@@ -79,7 +79,7 @@ Each schema file defines:
 
 ## Planned Schemas
 
-### common.schema.md
+### base.schema.md
 
 Fields shared by **all document types**:
 
@@ -87,10 +87,11 @@ Fields shared by **all document types**:
 |-------|------|----------|-------------|
 | `type` | enum | Yes | Document type identifier |
 | `status` | enum | Yes | Document lifecycle status |
+| `version` | semver | Yes | Document version (MAJOR.MINOR.PATCH) |
 | `created` | date | Yes | Creation date (YYYY-MM-DD) |
 | `updated` | date | Yes | Last update date (YYYY-MM-DD) |
 | `tags` | string[] | No | Searchable keywords |
-| `related` | string[] | No | Related document paths |
+| `related` | string[] | No | Documents affected when this document is modified (1-degree only) |
 
 ### Status Values by Document Type
 
@@ -123,7 +124,7 @@ Documentation Gate Triggered
         ▼
 Schema Validation Reviewer
         │
-        ├── Load: front-matters/common.schema.md
+        ├── Load: front-matters/base.schema.md
         ├── Load: front-matters/{type}.schema.md
         │
         ▼
@@ -148,7 +149,7 @@ Authors can consult schemas when uncertain about:
 
 Only include fields that need validation. Don't over-specify.
 
-### Use common.schema.md
+### Use base.schema.md
 
 Extract shared fields to avoid duplication across schemas.
 

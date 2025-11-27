@@ -99,11 +99,11 @@ blueprint/
 │ Gates                        │                              │
 │ "What to validate"           ▼                              │
 │                                                             │
-│ Phase Gates (sequential):                                   │
+│ Code Gates (validates: code):                               │
 │   Gate ──► Aspect ──► Criteria                              │
 │            (1:N)      (1:N)                                 │
 │                                                             │
-│ Document Gates (parallel):                                  │
+│ Document Gates (validates: document):                       │
 │   Documentation Gate ──► Schema Validation ──► front-matters/ │
 │                                                             │
 │ Each Aspect = One Reviewer Worker                           │

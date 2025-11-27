@@ -36,7 +36,7 @@ Gates prevent:
 
 | Type | Focus | Examples |
 |------|-------|----------|
-| **Phase Gate** | Work quality | Specification, Implementation |
+| **Code Gate** | Code/artifact quality | Specification, Implementation |
 | **Document Gate** | Format quality | Documentation |
 
 **Multiple Gates can run in parallel**, but **all required Gates must pass** for the review to succeed.
@@ -90,37 +90,34 @@ gates/
 ---
 type: gate
 status: active
+version: 1.0.0
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 tags: [gate, {gate-name}]
-related: [../../workflows/phases.md]
+related: [./aspects/]
 
 # Gate-specific
-gate-type: phase | document
-trigger: phase-boundary | document-change
-pass-condition: all-aspects | percentage
-pass-threshold: 100  # If percentage
+name: {gate-identifier}
+validates: code | document
+description: "{What this gate validates}"
 ---
 ```
 
-### Gate Type Differences
+### Gate Field Differences
 
-| Field | Phase Gate | Document Gate |
-|-------|------------|---------------|
-| `gate-type` | `phase` | `document` |
-| `trigger` | `phase-boundary` | `document-change` |
-| `related` | workflows/phases.md | `../front-matters/` |
+| Field | Code Gate | Document Gate |
+|-------|-----------|---------------|
+| `validates` | `code` | `document` |
+| `description` | Artifact/code quality focus | Format compliance focus |
+| `related` | `[./aspects/]` | `[./aspects/]` |
 
 ### Content Structure
 
 ```markdown
-# Gate: {Phase} Gate
+# Gate: {Name}
 
 ## Description
-[Purpose of this gate]
-
-## When Applied
-[At what point in the workflow]
+[Purpose of this gate - same as FrontMatter description]
 
 ## Aspects
 | Aspect | Reviewer | Description |
@@ -128,14 +125,8 @@ pass-threshold: 100  # If percentage
 | completeness | Completeness Reviewer | ... |
 | feasibility | Feasibility Reviewer | ... |
 
-## Pass Condition
-[all-aspects | X% of criteria]
-
-## On Pass
-[What happens when gate passes]
-
-## On Failure
-[What happens when gate fails]
+## Usage
+[When and how Orchestrator should invoke this gate via Handoff]
 ```
 
 ---
@@ -148,14 +139,17 @@ pass-threshold: 100  # If percentage
 ---
 type: aspect
 status: active
+version: 1.0.0
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 tags: [aspect, {gate-name}, {aspect-name}]
-related: [../gate.md]
+related: []
 
 # Aspect-specific
-gate: specification | implementation | documentation
+name: {aspect-identifier}
+gate: {parent-gate-name}
 reviewer: {reviewer-type}
+description: "{What this aspect validates}"
 ---
 ```
 
@@ -188,7 +182,7 @@ reviewer: {reviewer-type}
 
 ## Planned Gates
 
-### Phase Gates
+### Code Gates
 
 #### Specification Gate
 
