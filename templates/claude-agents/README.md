@@ -114,18 +114,36 @@ The Constitution file defines **principles** (rules to follow).
 
 ## Handoff Format
 
+### Worker → Orchestrator
+
 Workers return structured summaries to Orchestrator:
 
-```markdown
-## Handoff
-
-Return to Orchestrator with:
-- status: success | fail | partial
-- artifact: path to created file
-- summary: 1-2 sentence description
-- decisions_made: list of decisions
-- needs_confirmation: items requiring user input
+```yaml
+handoff:
+  status: success | fail | partial
+  artifact: path/to/created/file
+  summary: "1-2 sentence description"
+  decisions_made: []
+  needs_confirmation: []
 ```
+
+### Orchestrator → Reviewer
+
+Orchestrator sends documents for gate validation:
+
+```yaml
+handoff:
+  action: review
+  document: path/to/document
+  required-gates:
+    - specification    # or implementation
+    - documentation
+  context:
+    feature-id: "001-feature"
+    phase: specification
+```
+
+See `blueprint/gates/README.md` for complete Handoff structure.
 
 ---
 

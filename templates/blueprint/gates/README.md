@@ -1,15 +1,19 @@
 # Gates
 
-> Validation checkpoints between Phases. Each Gate contains Aspects with Criteria.
+> Validation checkpoints for quality assurance. Each Gate contains Aspects with Criteria.
 
 ---
 
 ## Purpose
 
-Gates are **quality checkpoints** that must be passed before proceeding to the next Phase:
+Gates are **quality checkpoints** that validate work artifacts:
 
+### Phase Gates (Sequential)
 1. **Specification Gate**: Validates specs before implementation
 2. **Implementation Gate**: Validates code before completion
+
+### Document Gates (Parallel)
+3. **Documentation Gate**: Validates document format on every creation/modification
 
 Gates ensure quality is maintained throughout the workflow.
 
@@ -26,6 +30,16 @@ Gates prevent:
 - Incomplete specifications reaching implementation
 - Low-quality code reaching production
 - Errors propagating through phases
+- Invalid document formats causing confusion
+
+### Gate Classification
+
+| Type | Focus | Examples |
+|------|-------|----------|
+| **Phase Gate** | Work quality | Specification, Implementation |
+| **Document Gate** | Format quality | Documentation |
+
+**Multiple Gates can run in parallel**, but **all required Gates must pass** for the review to succeed.
 
 ### Gate-Aspect-Criteria Hierarchy
 
@@ -53,12 +67,17 @@ gates/
 │       ├── completeness.md      # Aspect: Requirements completeness
 │       └── feasibility.md       # Aspect: Technical feasibility
 │
-└── implementation/              # Implementation Phase Gate
+├── implementation/              # Implementation Phase Gate
+│   ├── _gate.md                 # Gate metadata
+│   └── aspects/
+│       ├── code-style.md        # Aspect: Code style compliance
+│       ├── architecture.md      # Aspect: Architecture principles
+│       └── component.md         # Aspect: Component design
+│
+└── documentation/               # Documentation Gate (parallel)
     ├── _gate.md                 # Gate metadata
     └── aspects/
-        ├── code-style.md        # Aspect: Code style compliance
-        ├── architecture.md      # Aspect: Architecture principles
-        └── component.md         # Aspect: Component design
+        └── schema-validation.md # Aspect: Front matter schema compliance
 ```
 
 ---
@@ -73,15 +92,24 @@ type: gate
 status: active
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
-tags: [gate, {phase-name}]
+tags: [gate, {gate-name}]
 related: [../../workflows/phases.md]
 
 # Gate-specific
-phase: specification | implementation
+gate-type: phase | document
+trigger: phase-boundary | document-change
 pass-condition: all-aspects | percentage
 pass-threshold: 100  # If percentage
 ---
 ```
+
+### Gate Type Differences
+
+| Field | Phase Gate | Document Gate |
+|-------|------------|---------------|
+| `gate-type` | `phase` | `document` |
+| `trigger` | `phase-boundary` | `document-change` |
+| `related` | workflows/phases.md | `../_schemas/` |
 
 ### Content Structure
 
@@ -126,7 +154,7 @@ tags: [aspect, {gate-name}, {aspect-name}]
 related: [../_gate.md]
 
 # Aspect-specific
-gate: specification | implementation
+gate: specification | implementation | documentation
 reviewer: {reviewer-type}
 ---
 ```
@@ -160,20 +188,30 @@ reviewer: {reviewer-type}
 
 ## Planned Gates
 
-### Specification Gate
+### Phase Gates
+
+#### Specification Gate
 
 | Aspect | Focus | Criteria Examples |
 |--------|-------|-------------------|
 | **Completeness** | Are all requirements captured? | Functional reqs, Non-functional reqs, Edge cases |
 | **Feasibility** | Is it technically achievable? | Tech stack compatibility, Resource estimation |
 
-### Implementation Gate
+#### Implementation Gate
 
 | Aspect | Focus | Criteria Examples |
 |--------|-------|-------------------|
 | **Code-Style** | Does code follow standards? | Naming, Formatting, Comments |
 | **Architecture** | Does structure follow principles? | Single responsibility, Dependency direction |
 | **Component** | Is component design sound? | Props design, Reusability, Composition |
+
+### Document Gates
+
+#### Documentation Gate
+
+| Aspect | Focus | Criteria Examples |
+|--------|-------|-------------------|
+| **Schema Validation** | Does front matter conform to schema? | Required fields, Valid status values, Correct types |
 
 ---
 
@@ -194,26 +232,121 @@ Reviewers can run in **parallel** since Aspects are independent.
 
 ## Validation Flow
 
+### Overview
+
 ```
-Orchestrator
-    │
-    ▼
-Gate Triggered
-    │
-    ├──► Spawn Reviewer (Aspect 1) ──► Check Criteria ──► Handoff
-    ├──► Spawn Reviewer (Aspect 2) ──► Check Criteria ──► Handoff
-    └──► Spawn Reviewer (Aspect 3) ──► Check Criteria ──► Handoff
-                                              │
-                                              ▼
-                                    Orchestrator Aggregates
-                                              │
-                              ┌───────────────┴───────────────┐
-                              ▼                               ▼
-                        All Pass                         Some Fail
-                              │                               │
-                              ▼                               ▼
-                     Proceed to Next Phase           Request Fix or User Decision
+Worker (Specifier/Implementer)
+        │
+        ▼
+    Document Created (e.g., spec.md)
+        │
+        ▼
+    Handoff to Orchestrator
+        │
+        ▼
+┌─────────────────────────────────────────────────────────────┐
+│ ORCHESTRATOR                                                │
+│                                                             │
+│ Handoff to Reviewer:                                        │
+│   document: spec.md                                         │
+│   required-gates: [specification, documentation]            │
+└─────────────────────────────────────────────────────────────┘
+        │
+        ▼
+┌─────────────────────────────────────────────────────────────┐
+│ REVIEWER                                                    │
+│                                                             │
+│   ┌───────────────────┐       ┌───────────────────┐        │
+│   │ Specification     │       │ Documentation     │        │
+│   │ Gate              │ 병렬   │ Gate              │        │
+│   │ ├─ Completeness   │       │ └─ Schema         │        │
+│   │ └─ Feasibility    │       │    Validation     │        │
+│   └─────────┬─────────┘       └─────────┬─────────┘        │
+│             │                           │                   │
+│             └─────────────┬─────────────┘                   │
+│                           ▼                                 │
+│                   Aggregate Results                         │
+│                           │                                 │
+│            ┌──────────────┴──────────────┐                  │
+│            ▼                             ▼                  │
+│       All Pass                      Any Fail                │
+│            │                             │                  │
+│            ▼                             ▼                  │
+│    Handoff: Pass                 Handoff: Fail + Details    │
+└─────────────────────────────────────────────────────────────┘
+        │
+        ▼
+    Orchestrator decides next step
 ```
+
+### Key Points
+
+- **Parallel Execution**: Multiple Gates run simultaneously
+- **All Must Pass**: Every required Gate must pass for overall success
+- **Aggregated Result**: Reviewer combines all Gate results into single Handoff
+
+---
+
+## Handoff Structure
+
+### Orchestrator → Reviewer
+
+```yaml
+handoff:
+  action: review
+  document: blueprint/features/001-auth/spec.md
+  required-gates:
+    - specification
+    - documentation
+  context:
+    feature-id: "001-auth"
+    phase: specification
+```
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `action` | Yes | Always `review` for gate validation |
+| `document` | Yes | Path to document being reviewed |
+| `required-gates` | Yes | List of gates that must all pass |
+| `context` | No | Additional context for reviewers |
+
+### Reviewer → Orchestrator
+
+```yaml
+handoff:
+  status: fail
+  document: blueprint/features/001-auth/spec.md
+  gates:
+    specification:
+      status: pass
+      aspects:
+        completeness:
+          status: pass
+          criteria: [...]
+        feasibility:
+          status: pass
+          criteria: [...]
+    documentation:
+      status: fail
+      aspects:
+        schema-validation:
+          status: fail
+          violations:
+            - field: status
+              expected: "pending | in-progress | completed | failed"
+              actual: "active"
+              suggestion: "Use 'in-progress' for artifact documents"
+  summary: "Documentation Gate failed: invalid status value for artifact"
+  needs-fix: true
+```
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `status` | Yes | `pass` or `fail` (overall result) |
+| `document` | Yes | Path to reviewed document |
+| `gates` | Yes | Per-gate results with aspects |
+| `summary` | Yes | Human-readable summary |
+| `needs-fix` | Yes | Whether document requires modification |
 
 ---
 
@@ -251,5 +384,6 @@ Good: "No circular dependencies between modules"
 ## Related
 
 - `../workflows/` for Phase definitions
+- `../_schemas/` for schema definitions (Documentation Gate)
 - `../constitutions/workers/reviewer.md` for Reviewer principles
 - `.claude/agents/reviewer.md` for Reviewer behavior

@@ -12,6 +12,7 @@ This directory is the **heart of the framework**. It contains:
 2. **Gates**: Validation checkpoints with Criteria
 3. **Workflows**: Phase and Stage definitions
 4. **Features**: Containers for Artifacts (spec, plan, tasks, reviews)
+5. **Schemas**: Document format definitions for validation
 
 ---
 
@@ -30,6 +31,14 @@ The name reflects its role:
 blueprint/
 ├── README.md                    # This file
 │
+├── _schemas/                    # Document format definitions
+│   ├── _common.schema.md        # Shared fields across all types
+│   ├── constitution.schema.md
+│   ├── gate.schema.md
+│   ├── aspect.schema.md
+│   ├── feature.schema.md
+│   └── artifact.schema.md       # spec, plan, task, review
+│
 ├── constitutions/               # Principles
 │   ├── base.md                  # Global principles (all Workers)
 │   └── workers/                 # Worker-specific principles
@@ -42,7 +51,10 @@ blueprint/
 │   ├── specification/           # Specification Phase gate
 │   │   ├── _gate.md
 │   │   └── aspects/
-│   └── implementation/          # Implementation Phase gate
+│   ├── implementation/          # Implementation Phase gate
+│   │   ├── _gate.md
+│   │   └── aspects/
+│   └── documentation/           # Documentation gate (parallel)
 │       ├── _gate.md
 │       └── aspects/
 │
@@ -87,8 +99,12 @@ blueprint/
 │ Gates                        │                              │
 │ "What to validate"           ▼                              │
 │                                                             │
-│ Gate ──► Aspect ──► Criteria                                │
-│          (1:N)      (1:N)                                   │
+│ Phase Gates (sequential):                                   │
+│   Gate ──► Aspect ──► Criteria                              │
+│            (1:N)      (1:N)                                 │
+│                                                             │
+│ Document Gates (parallel):                                  │
+│   Documentation Gate ──► Schema Validation ──► _schemas/    │
 │                                                             │
 │ Each Aspect = One Reviewer Worker                           │
 └─────────────────────────────────────────────────────────────┘
@@ -102,6 +118,14 @@ blueprint/
 │             ├── plan.md                                     │
 │             ├── tasks/                                      │
 │             └── reviews/                                    │
+└─────────────────────────────────────────────────────────────┘
+                               │
+┌──────────────────────────────┼──────────────────────────────┐
+│ Schemas                      │                              │
+│ "What format to follow"      ▼                              │
+│                                                             │
+│ _schemas/ ──► Defines valid front matter for each type      │
+│               Used by Documentation Gate for validation     │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -122,6 +146,7 @@ When initializing a project:
 
 | Directory | Purpose | See |
 |-----------|---------|-----|
+| `_schemas/` | Document format definitions | `_schemas/README.md` |
 | `constitutions/` | Principle definitions | `constitutions/README.md` |
 | `gates/` | Validation checkpoints | `gates/README.md` |
 | `workflows/` | Phase/Stage definitions | `workflows/README.md` |

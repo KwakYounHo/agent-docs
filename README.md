@@ -47,8 +47,10 @@ This framework provides a **structure** and **schema** for managing LLM-based ag
 
 | Term | Definition |
 |------|------------|
-| **Gate** | Validation checkpoint before proceeding to next Phase |
-| **Aspect** | Area of expertise within a Gate (e.g., Code-Style, Architecture) |
+| **Gate** | Validation checkpoint for quality assurance |
+| **Phase Gate** | Sequential gate at phase boundaries (Specification, Implementation) |
+| **Document Gate** | Parallel gate triggered on document changes (Documentation) |
+| **Aspect** | Area of expertise within a Gate (e.g., Code-Style, Schema Validation) |
 | **Criteria** | Minimum requirements to pass an Aspect |
 
 ### Document Types
@@ -58,7 +60,7 @@ This framework provides a **structure** and **schema** for managing LLM-based ag
 | **Constitution** | Principles that must be followed (global + per-Worker) |
 | **Feature** | Container for related Artifacts; maps to a git branch |
 | **Artifact** | Output produced by Workers (spec.md, task.md, review.md, code, etc.) |
-| **Handoff** | Structured format for Worker-to-Orchestrator communication |
+| **Handoff** | Structured format for inter-agent communication (Worker↔Orchestrator↔Reviewer) |
 
 ---
 
@@ -72,6 +74,7 @@ agent-docs/
 ├── templates/
 │   ├── claude-agents/                   # → .claude/agents/ (Claude Code integration)
 │   └── blueprint/                       # → blueprint/ (Framework core)
+│       ├── _schemas/                    # Document format definitions
 │       ├── constitutions/
 │       ├── gates/
 │       ├── workflows/
@@ -91,8 +94,12 @@ target-project/
 │       ├── implementer.md
 │       └── reviewer.md
 └── blueprint/                           # Framework core
+    ├── _schemas/                        # Document format definitions
     ├── constitutions/
     ├── gates/
+    │   ├── specification/
+    │   ├── implementation/
+    │   └── documentation/               # Parallel validation
     ├── workflows/
     └── features/
 ```
@@ -161,26 +168,31 @@ User Request
 │ ORCHESTRATOR                                                │
 │ - Receives request                                          │
 │ - Delegates to appropriate Worker                           │
-│ - Collects summarized results                               │
+│ - Sends documents to Reviewer with required-gates           │
 │ - Manages state and user confirmations                      │
 └─────────────────────────────────────────────────────────────┘
     │
     ├──► Specification Phase
     │    ├── Specifier Worker → spec.md, plan.md
-    │    └── Specification Gate
-    │        ├── Completeness Reviewer
-    │        └── Feasibility Reviewer
+    │    └── Review (required-gates: [specification, documentation])
+    │        ├── Specification Gate ──┬── (parallel) ──┬── All must pass
+    │        └── Documentation Gate ──┘                │
+    │                                                  ▼
+    │                                           Pass / Fail
     │
     ├──► Implementation Phase
     │    ├── Implementer Worker (per Task) → code
-    │    └── Implementation Gate
-    │        ├── Code-Style Reviewer
-    │        ├── Architecture Reviewer
-    │        └── Component Reviewer
+    │    └── Review (required-gates: [implementation, documentation])
+    │        ├── Implementation Gate ──┬── (parallel) ──┬── All must pass
+    │        └── Documentation Gate ───┘                │
+    │                                                   ▼
+    │                                            Pass / Fail
     │
     └──► User Confirmation
          └── Accept / Request Changes
 ```
+
+**Note**: Multiple Gates run in parallel during review, but all required Gates must pass for the review to succeed.
 
 ---
 
