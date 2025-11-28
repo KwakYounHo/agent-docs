@@ -1,12 +1,16 @@
+---
+id: "001"
+title: Schema-First Contract-Based Development
+created: 2025-11-27
+status: accepted
+scope: process
+tags: [schema, contract, development-order, phase]
+related: []
+supersedes: null
+superseded-by: null
+---
+
 # ADR-001: Schema-First Contract-Based Development
-
-## Status
-
-Accepted
-
-## Date
-
-2024-11-27
 
 ## Context
 
