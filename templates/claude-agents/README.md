@@ -90,10 +90,18 @@ You MUST read and follow:
 
 | Worker | File | Role |
 |--------|------|------|
-| **Orchestrator** | `orchestrator.template.md` | Coordinates Workers, manages state |
+| **Orchestrator** | `orchestrator.template.md` | Coordinates Workers, manages state, handles `[DECIDE]` markers |
 | **Specifier** | `specifier.template.md` | Creates specifications from requirements |
 | **Implementer** | `implementer.template.md` | Implements code based on tasks |
 | **Reviewer** | `reviewer.template.md` | Validates artifacts against criteria |
+
+### `[DECIDE]` Marker Handling
+
+Workers (Specifier, Implementer) use `[DECIDE]` markers to indicate items requiring user judgment:
+
+- **Specifier**: Marks ambiguous requirements that need clarification
+- **Implementer**: Marks unclear specifications that cannot be implemented without user decision
+- **Orchestrator**: Responsible for detecting `[DECIDE]` markers and requesting user confirmation before proceeding
 
 ---
 
@@ -123,8 +131,17 @@ handoff:
   status: completed | blocked | failed
   summary: "Brief description of work done"
   artifacts: [path/to/created/files]
+  decide-markers: [path/to/file#marker-location]  # If any [DECIDE] markers were added
   next-steps: ["Recommended follow-up actions"]
 ```
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `status` | Yes | `completed`, `blocked`, or `failed` |
+| `summary` | Yes | Brief description of work done |
+| `artifacts` | If any | Paths to created/modified files |
+| `decide-markers` | If any | Locations of `[DECIDE]` markers requiring user decision |
+| `next-steps` | If any | Recommended follow-up actions |
 
 See `blueprint/constitutions/base.md#handoff-protocol` for required fields.
 
