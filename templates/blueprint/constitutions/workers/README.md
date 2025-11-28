@@ -108,7 +108,7 @@ target-workers: [{worker-name}]
 |---------|---------|
 | Principles | Specification-specific rules |
 | Standards | Complete specs, clear acceptance criteria |
-| Boundaries | No implementation, no code |
+| Boundaries | No code production |
 
 > Role, Responsibilities, Handoff → defined in Instruction (`.claude/agents/specifier.md`)
 

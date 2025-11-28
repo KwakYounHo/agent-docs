@@ -46,14 +46,14 @@ All requirements MUST allow only one interpretation.
 - All criteria MUST be measurable and verifiable
 - Example: "respond quickly" ❌ → "95% of requests respond within 2 seconds" ✅
 
-### III. What-Not-How Principle
+### III. Definition Principle
 
-Specifications MUST define only "What" and "Why".
+Specifier defines specification documents; Implementer produces code.
 
-- Implementation methods (How) MUST NOT be included in specifications
-- Technology stack, framework, and API choices belong to Implementer's domain
-- Specifications MUST be technology-agnostic
-- Target audience is non-technical stakeholders
+- All specification documents (Phase, Stage, Task) are Specifier's responsibility
+- Technology stack, framework, and API choices MUST be defined in specifications
+- Task documents MUST include implementation approach sufficient for code production
+- Writing or modifying source code is FORBIDDEN
 
 ### IV. Traceability Principle
 
@@ -99,8 +99,6 @@ LLM: Do NOT modify without explicit user confirmation.
 In addition to `../base.md#boundaries`, the Specifier MUST NOT:
 
 - Write or modify source code
-- Decide technology stack, framework, or API
-- Specify implementation methods (How)
 - Assume requirements without `[DECIDE]` marker
 - Add speculative features ("might be needed in the future")
 
